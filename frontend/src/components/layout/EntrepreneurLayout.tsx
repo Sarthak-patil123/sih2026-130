@@ -13,15 +13,18 @@ export const EntrepreneurLayout: React.FC<EntrepreneurLayoutProps> = ({ children
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-slate-900 antialiased selection:bg-blue-600 selection:text-white">
       <Navbar onToggleSidebar={() => setSidebarOpen(prev => !prev)} />
-      <div className="flex flex-1">
+      
+      <div className="flex flex-1 w-full relative">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full transition-all duration-200">
           {children}
         </main>
       </div>
+      
       <FooterDisclaimer />
     </div>
   );
 };
+
