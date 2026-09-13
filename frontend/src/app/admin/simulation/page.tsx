@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Sparkles, RefreshCw, ShieldCheck, Loader2, Play } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/common/Button';
 
@@ -12,6 +12,7 @@ export default function AdminSimulationPage() {
   const [inspectionDays, setInspectionDays] = useState(3); // Current baseline is 5 days
   const [autoValidationRate, setAutoValidationRate] = useState(85); // Current baseline is 60%
   const [parallelRatio, setParallelRatio] = useState(70); // Current baseline is 40%
+  const [isSimulating, setIsSimulating] = useState(false);
 
   // Simulation Formula
   const baselineDays = 14.2;
@@ -27,6 +28,13 @@ export default function AdminSimulationPage() {
     setInspectionDays(5);
     setAutoValidationRate(60);
     setParallelRatio(40);
+  };
+
+  const runSimulation = () => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsSimulating(false);
+    }, 1200);
   };
 
   return (
@@ -52,14 +60,26 @@ export default function AdminSimulationPage() {
           </p>
         </div>
 
-        <Button
-          variant="secondary"
-          size="sm"
-          icon={RefreshCw}
-          onClick={resetSimulation}
-        >
-          {isMarathi ? "डीफॉल्ट बेसलाइनवर आणा" : "Reset to Baseline"}
-        </Button>
+        <div className="flex items-center gap-2.5">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={RefreshCw}
+            disabled={isSimulating}
+            onClick={resetSimulation}
+          >
+            {isMarathi ? "डीफॉल्ट बेसलाइन" : "Reset"}
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={Play}
+            loading={isSimulating}
+            onClick={runSimulation}
+          >
+            {isMarathi ? "सिम्युलेशन चालवा" : "Run Statewide Simulation"}
+          </Button>
+        </div>
       </div>
 
       {/* Simulated Projection Result Card */}
@@ -86,24 +106,33 @@ export default function AdminSimulationPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
-          <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-            <span className="text-slate-400 block text-[10px] uppercase">Current Average</span>
-            <span className="text-base font-bold text-white mt-0.5 block">{baselineDays} Days</span>
+        {isSimulating ? (
+          <div className="flex items-center justify-center gap-3 py-6 bg-white/5 rounded-lg border border-white/10 text-xs text-slate-200">
+            <Loader2 className="h-5 w-5 text-[#D89B3C] animate-spin shrink-0" />
+            <span className="font-semibold">
+              Simulating 10,000 regulatory workflows across 36 Maharashtra districts...
+            </span>
           </div>
-          <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-            <span className="text-[#D89B3C] block text-[10px] uppercase font-bold">Simulated Projection</span>
-            <span className="text-base font-bold text-[#D89B3C] mt-0.5 block">{projectedAvgDays} Days</span>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+            <div className="bg-white/10 rounded-lg p-3 border border-white/10">
+              <span className="text-slate-400 block text-[10px] uppercase">Current Average</span>
+              <span className="text-base font-bold text-white mt-0.5 block">{baselineDays} Days</span>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3 border border-white/10">
+              <span className="text-[#D89B3C] block text-[10px] uppercase font-bold">Simulated Projection</span>
+              <span className="text-base font-bold text-[#D89B3C] mt-0.5 block">{projectedAvgDays} Days</span>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3 border border-white/10">
+              <span className="text-emerald-400 block text-[10px] uppercase font-bold">Time Saved</span>
+              <span className="text-base font-bold text-emerald-400 mt-0.5 block">{(baselineDays - parseFloat(projectedAvgDays)).toFixed(1)} Days / Case</span>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3 border border-white/10">
+              <span className="text-slate-400 block text-[10px] uppercase">Monthly Clearance Velocity</span>
+              <span className="text-base font-bold text-white mt-0.5 block">~320 Units / Mo</span>
+            </div>
           </div>
-          <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-            <span className="text-emerald-400 block text-[10px] uppercase font-bold">Time Saved</span>
-            <span className="text-base font-bold text-emerald-400 mt-0.5 block">{(baselineDays - parseFloat(projectedAvgDays)).toFixed(1)} Days / Case</span>
-          </div>
-          <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-            <span className="text-slate-400 block text-[10px] uppercase">Monthly Clearance Velocity</span>
-            <span className="text-base font-bold text-white mt-0.5 block">~320 Units / Mo</span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Interactive Simulation Sliders */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileCheck, AlertCircle, X, FileText } from 'lucide-react';
+import { UploadCloud, FileCheck, AlertCircle, X, FileText, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from './Button';
 
 export interface FileUploadResult {
@@ -30,6 +30,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStage, setUploadStage] = useState<string>("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -82,6 +84,19 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     }
 
     setIsUploading(true);
+    setUploadProgress(25);
+    setUploadStage("Encrypting & transmitting file to Single-Window Vault...");
+
+    setTimeout(() => {
+      setUploadProgress(70);
+      setUploadStage("Running OCR metadata check & verifying digital signatures...");
+    }, 700);
+
+    setTimeout(() => {
+      setUploadProgress(100);
+      setUploadStage("Verified. Generating immutable locker reference...");
+    }, 1400);
+
     setTimeout(() => {
       setIsUploading(false);
       setUploadSuccess(true);
@@ -93,7 +108,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           file: selectedFile
         });
       }
-    }, 600);
+    }, 1800);
   };
 
   const handleRemove = () => {
@@ -176,11 +191,38 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         </div>
       )}
 
+      {/* Active Upload & Verification Progress Bar */}
+      {isUploading && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50/60 p-3.5 space-y-2 text-xs">
+          <div className="flex items-center justify-between text-blue-900 font-semibold">
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+              <span>{uploadStage}</span>
+            </div>
+            <span className="font-mono text-[11px] text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
+              {uploadProgress}%
+            </span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-blue-200/70">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-600 to-emerald-500 transition-all duration-300 ease-out"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Success Notification */}
       {uploadSuccess && (
-        <div className="flex items-center gap-2 rounded-md bg-emerald-50 p-3 text-xs text-emerald-800 border border-emerald-200">
-          <FileCheck className="h-4 w-4 shrink-0 text-emerald-600" />
-          <span className="font-medium">Document uploaded successfully.</span>
+        <div className="flex items-center justify-between rounded-md bg-emerald-50 p-3.5 text-xs text-emerald-900 border border-emerald-300 shadow-2xs animate-fade-in">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-600" />
+            <div>
+              <p className="font-bold">Document Verified & Archived in Vault</p>
+              <p className="text-[11px] text-emerald-700">Digital checksum logged. Ready for multi-department statutory review.</p>
+            </div>
+          </div>
+          <FileCheck className="h-5 w-5 text-emerald-600" />
         </div>
       )}
 
@@ -194,7 +236,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             onClick={handleUploadSubmit}
             icon={UploadCloud}
           >
-            Upload Document
+            {isUploading ? "Uploading & Verifying..." : "Upload Document"}
           </Button>
         </div>
       )}

@@ -10,7 +10,8 @@ import {
   Lock, 
   Mail, 
   CheckCircle2, 
-  Info
+  Info,
+  Loader2
 } from 'lucide-react';
 import { usePortal } from '@/context/PortalContext';
 import { Button } from '@/components/common/Button';
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("••••••••••••");
   const [selectedRole, setSelectedRole] = useState<UserRole>("entrepreneur");
   const [loading, setLoading] = useState(false);
+  const [demoLoadingRole, setDemoLoadingRole] = useState<UserRole | null>(null);
 
   const handleStandardLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,22 +42,31 @@ export default function LoginPage() {
       } else {
         router.push('/entrepreneur/dashboard');
       }
-    }, 400);
+    }, 1200);
   };
 
   const handleDemoEntrepreneur = () => {
-    loginAs('entrepreneur');
-    router.push('/entrepreneur/dashboard');
+    setDemoLoadingRole('entrepreneur');
+    setTimeout(() => {
+      loginAs('entrepreneur');
+      router.push('/entrepreneur/dashboard');
+    }, 1100);
   };
 
   const handleDemoOfficer = () => {
-    loginAs('officer');
-    router.push('/officer/dashboard');
+    setDemoLoadingRole('officer');
+    setTimeout(() => {
+      loginAs('officer');
+      router.push('/officer/dashboard');
+    }, 1100);
   };
 
   const handleDemoAdmin = () => {
-    loginAs('admin');
-    router.push('/admin/dashboard');
+    setDemoLoadingRole('admin');
+    setTimeout(() => {
+      loginAs('admin');
+      router.push('/admin/dashboard');
+    }, 1100);
   };
 
   return (
@@ -147,27 +158,42 @@ export default function LoginPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
                   <button
                     type="button"
+                    disabled={demoLoadingRole !== null || loading}
                     onClick={handleDemoEntrepreneur}
-                    className="flex items-center justify-center gap-1.5 rounded-md bg-[#0F2942] px-2.5 py-2.5 text-xs font-bold text-white hover:bg-[#1B365D] transition-all shadow-xs cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-md bg-[#0F2942] px-2.5 py-2.5 text-xs font-bold text-white hover:bg-[#1B365D] transition-all shadow-xs cursor-pointer disabled:opacity-75"
                   >
-                    <Building2 className="h-4 w-4 text-blue-300" />
-                    Entrepreneur
+                    {demoLoadingRole === 'entrepreneur' ? (
+                      <Loader2 className="h-4 w-4 text-blue-300 animate-spin" />
+                    ) : (
+                      <Building2 className="h-4 w-4 text-blue-300" />
+                    )}
+                    <span>{demoLoadingRole === 'entrepreneur' ? "Verifying..." : "Entrepreneur"}</span>
                   </button>
                   <button
                     type="button"
+                    disabled={demoLoadingRole !== null || loading}
                     onClick={handleDemoOfficer}
-                    className="flex items-center justify-center gap-1.5 rounded-md bg-amber-700 px-2.5 py-2.5 text-xs font-bold text-white hover:bg-amber-800 transition-all shadow-xs cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-md bg-amber-700 px-2.5 py-2.5 text-xs font-bold text-white hover:bg-amber-800 transition-all shadow-xs cursor-pointer disabled:opacity-75"
                   >
-                    <UserCheck className="h-4 w-4 text-amber-200" />
-                    Govt Officer
+                    {demoLoadingRole === 'officer' ? (
+                      <Loader2 className="h-4 w-4 text-amber-200 animate-spin" />
+                    ) : (
+                      <UserCheck className="h-4 w-4 text-amber-200" />
+                    )}
+                    <span>{demoLoadingRole === 'officer' ? "Verifying..." : "Govt Officer"}</span>
                   </button>
                   <button
                     type="button"
+                    disabled={demoLoadingRole !== null || loading}
                     onClick={handleDemoAdmin}
-                    className="flex items-center justify-center gap-1.5 rounded-md bg-slate-700 px-2.5 py-2.5 text-xs font-bold text-white hover:bg-slate-800 transition-all shadow-xs cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 rounded-md bg-slate-700 px-2.5 py-2.5 text-xs font-bold text-white hover:bg-slate-800 transition-all shadow-xs cursor-pointer disabled:opacity-75"
                   >
-                    <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                    Admin
+                    {demoLoadingRole === 'admin' ? (
+                      <Loader2 className="h-4 w-4 text-emerald-300 animate-spin" />
+                    ) : (
+                      <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                    )}
+                    <span>{demoLoadingRole === 'admin' ? "Verifying..." : "Admin"}</span>
                   </button>
                 </div>
               </div>

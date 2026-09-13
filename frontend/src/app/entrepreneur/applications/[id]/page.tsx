@@ -31,6 +31,8 @@ export default function ApplicationDetailsPage() {
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [selectedDocForUpload, setSelectedDocForUpload] = useState<Partial<DocumentItem> | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [isDownloadingCert, setIsDownloadingCert] = useState(false);
+  const [isDownloadingDossier, setIsDownloadingDossier] = useState(false);
 
   // Find application by ID
   const application = applications.find(a => a.id === id) || applications[0];
@@ -54,6 +56,24 @@ export default function ApplicationDetailsPage() {
   const handleOpenUploadModal = (doc: Partial<DocumentItem>) => {
     setSelectedDocForUpload(doc);
     setUploadModalOpen(true);
+  };
+
+  const handleDownloadCertificate = () => {
+    setIsDownloadingCert(true);
+    setTimeout(() => {
+      setIsDownloadingCert(false);
+      setSuccessToast(`Statutory Clearance Certificate #${application.certificateNo || 'MH-NOC-2026'} compiled with digital DSC seal.`);
+      setTimeout(() => setSuccessToast(null), 5000);
+    }, 1300);
+  };
+
+  const handleDownloadDossier = () => {
+    setIsDownloadingDossier(true);
+    setTimeout(() => {
+      setIsDownloadingDossier(false);
+      setSuccessToast(`Application Dossier Summary for #${application.id} compiled and downloaded.`);
+      setTimeout(() => setSuccessToast(null), 5000);
+    }, 1100);
   };
 
   const handleFileUploaded = (fileData: { name: string; size: string }) => {
@@ -103,18 +123,20 @@ export default function ApplicationDetailsPage() {
               variant="success"
               size="sm"
               icon={Download}
-              onClick={() => alert(`Downloading Statutory Certificate #${application.certificateNo || 'MH-NOC-2026'}`)}
+              loading={isDownloadingCert}
+              onClick={handleDownloadCertificate}
             >
-              Download Certificate
+              {isDownloadingCert ? "Downloading Certificate..." : "Download Certificate"}
             </Button>
           )}
           <Button
             variant="secondary"
             size="sm"
             icon={Download}
-            onClick={() => alert(`Downloading Application Dossier Summary #${application.id}`)}
+            loading={isDownloadingDossier}
+            onClick={handleDownloadDossier}
           >
-            Download Dossier
+            {isDownloadingDossier ? "Compiling Dossier..." : "Download Dossier"}
           </Button>
         </div>
       </div>

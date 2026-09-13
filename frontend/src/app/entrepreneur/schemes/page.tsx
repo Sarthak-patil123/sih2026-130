@@ -21,6 +21,7 @@ export default function GovernmentSchemesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSector, setSelectedSector] = useState("All");
   const [detailsModalScheme, setDetailsModalScheme] = useState<SchemeItem | null>(null);
+  const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
 
   const sectors = ["All", "Food Processing", "Manufacturing", "All Industrial Sectors", "MSME Engineering & Agro", "Green & Renewable Energy"];
 
@@ -32,7 +33,12 @@ export default function GovernmentSchemesPage() {
   });
 
   const handleApply = (scheme: SchemeItem) => {
-    applyForScheme(scheme.id);
+    setIsSubmittingClaim(true);
+    setTimeout(() => {
+      applyForScheme(scheme.id);
+      setIsSubmittingClaim(false);
+      setDetailsModalScheme(null);
+    }, 1300);
   };
 
   return (
@@ -124,21 +130,21 @@ export default function GovernmentSchemesPage() {
         size="lg"
         footer={
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" onClick={() => setDetailsModalScheme(null)}>
+            <Button variant="secondary" size="sm" onClick={() => setDetailsModalScheme(null)} disabled={isSubmittingClaim}>
               Close
             </Button>
             <Button
               variant="primary"
               size="sm"
               icon={ShieldCheck}
+              loading={isSubmittingClaim}
               onClick={() => {
                 if (detailsModalScheme) {
                   handleApply(detailsModalScheme);
                 }
-                setDetailsModalScheme(null);
               }}
             >
-              Submit Subsidy Claim Application
+              {isSubmittingClaim ? "Submitting Claim Application..." : "Submit Subsidy Claim Application"}
             </Button>
           </div>
         }

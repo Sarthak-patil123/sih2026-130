@@ -60,6 +60,10 @@ export default function OfficerApplicationReviewPage() {
 
   const [previewDoc, setPreviewDoc] = useState<Partial<DocumentItem> | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isApproving, setIsApproving] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+  const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+  const [isSchedulingInspection, setIsSchedulingInspection] = useState(false);
 
   if (!application) {
     return (
@@ -75,40 +79,56 @@ export default function OfficerApplicationReviewPage() {
   const handleSendQuery = (e: React.FormEvent) => {
     e.preventDefault();
     if (!queryText.trim()) return;
-    raiseOfficerQuery(application.id, queryText, queryDeadline);
-    setQueryModalOpen(false);
-    setToastMessage(`Query raised successfully on ${application.id}. Status updated to "Query Raised".`);
-    setTimeout(() => setToastMessage(null), 4000);
+    setIsSubmittingQuery(true);
+    setTimeout(() => {
+      raiseOfficerQuery(application.id, queryText, queryDeadline);
+      setIsSubmittingQuery(false);
+      setQueryModalOpen(false);
+      setToastMessage(`Query raised successfully on ${application.id}. Status updated to "Query Raised".`);
+      setTimeout(() => setToastMessage(null), 4000);
+    }, 1200);
   };
 
   const handleScheduleInspectionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    scheduleOrUpdateInspection({
-      applicationId: application.id,
-      approval: application.approval,
-      department: application.department,
-      date: inspectionDate,
-      time: inspectionTime,
-      purpose: inspectionPurpose,
-      location: `${project?.address || 'Plot B-14, Butibori Industrial Area, Nagpur'}`
-    });
-    setInspectionModalOpen(false);
-    setToastMessage(`Inspection scheduled for ${inspectionDate} at ${inspectionTime}.`);
-    setTimeout(() => setToastMessage(null), 4000);
+    setIsSchedulingInspection(true);
+    setTimeout(() => {
+      scheduleOrUpdateInspection({
+        applicationId: application.id,
+        approval: application.approval,
+        department: application.department,
+        date: inspectionDate,
+        time: inspectionTime,
+        purpose: inspectionPurpose,
+        location: `${project?.address || 'Plot B-14, Butibori Industrial Area, Nagpur'}`
+      });
+      setIsSchedulingInspection(false);
+      setInspectionModalOpen(false);
+      setToastMessage(`Inspection scheduled for ${inspectionDate} at ${inspectionTime}.`);
+      setTimeout(() => setToastMessage(null), 4000);
+    }, 1200);
   };
 
   const handleApproveConfirm = () => {
-    approveApplication(application.id, officerRemarks);
-    setApproveDialogOpen(false);
-    setToastMessage(`Application ${application.id} approved successfully. Certificate generated.`);
-    setTimeout(() => setToastMessage(null), 4000);
+    setIsApproving(true);
+    setTimeout(() => {
+      approveApplication(application.id, officerRemarks);
+      setIsApproving(false);
+      setApproveDialogOpen(false);
+      setToastMessage(`Application ${application.id} approved successfully. Digital NOC Certificate issued.`);
+      setTimeout(() => setToastMessage(null), 4000);
+    }, 1800);
   };
 
   const handleRejectConfirm = () => {
-    rejectApplication(application.id, rejectionReason);
-    setRejectDialogOpen(false);
-    setToastMessage(`Application ${application.id} has been marked as Rejected.`);
-    setTimeout(() => setToastMessage(null), 4000);
+    setIsRejecting(true);
+    setTimeout(() => {
+      rejectApplication(application.id, rejectionReason);
+      setIsRejecting(false);
+      setRejectDialogOpen(false);
+      setToastMessage(`Application ${application.id} has been marked as Rejected.`);
+      setTimeout(() => setToastMessage(null), 4000);
+    }, 1200);
   };
 
   return (
@@ -392,11 +412,11 @@ export default function OfficerApplicationReviewPage() {
           />
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setQueryModalOpen(false)}>
+            <Button variant="secondary" size="sm" onClick={() => setQueryModalOpen(false)} disabled={isSubmittingQuery}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" size="sm">
-              Send Query to Applicant
+            <Button type="submit" variant="primary" size="sm" loading={isSubmittingQuery}>
+              {isSubmittingQuery ? "Dispatching Query..." : "Send Query to Applicant"}
             </Button>
           </div>
         </form>
@@ -438,11 +458,11 @@ export default function OfficerApplicationReviewPage() {
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setInspectionModalOpen(false)}>
+            <Button variant="secondary" size="sm" onClick={() => setInspectionModalOpen(false)} disabled={isSchedulingInspection}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" size="sm">
-              Confirm Schedule
+            <Button type="submit" variant="primary" size="sm" loading={isSchedulingInspection}>
+              {isSchedulingInspection ? "Booking Slot..." : "Confirm Schedule"}
             </Button>
           </div>
         </form>
@@ -453,9 +473,13 @@ export default function OfficerApplicationReviewPage() {
         isOpen={approveDialogOpen}
         onClose={() => setApproveDialogOpen(false)}
         onConfirm={handleApproveConfirm}
+        loading={isApproving}
         title="Confirm Grant of Statutory Clearance"
-        message={`Are you sure you wish to grant approval for ${application.approval} (Application #${application.id})? A digitally signed certificate will be issued to ${application.companyName}.`}
-        confirmLabel="Grant Statutory NOC"
+        message={isApproving 
+          ? "Signing clearance with Officer DSC token and minting immutable audit log block..."
+          : `Are you sure you wish to grant approval for ${application.approval} (Application #${application.id})? A digitally signed certificate will be issued to ${application.companyName}.`
+        }
+        confirmLabel={isApproving ? "Issuing NOC..." : "Grant Statutory NOC"}
         variant="success"
       />
 
@@ -464,9 +488,13 @@ export default function OfficerApplicationReviewPage() {
         isOpen={rejectDialogOpen}
         onClose={() => setRejectDialogOpen(false)}
         onConfirm={handleRejectConfirm}
+        loading={isRejecting}
         title="Confirm Rejection of Application"
-        message={`Are you sure you wish to reject application #${application.id}? The applicant will be formally notified with statutory grounds for objection.`}
-        confirmLabel="Reject Application"
+        message={isRejecting 
+          ? "Formalizing rejection notice with statutory citations..."
+          : `Are you sure you wish to reject application #${application.id}? The applicant will be formally notified with statutory grounds for objection.`
+        }
+        confirmLabel={isRejecting ? "Rejecting..." : "Reject Application"}
         variant="danger"
       />
 

@@ -24,6 +24,8 @@ export default function OfficerInspectionsPage() {
   const [completionRemarks, setCompletionRemarks] = useState("Physical verification completed on site. Setback lines and water sump meet regulatory safety criteria.");
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [rescheduleDate, setRescheduleDate] = useState("2026-09-28");
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [isRescheduling, setIsRescheduling] = useState(false);
 
   const filtered = inspections.filter(i => {
     if (activeFilter === "Upcoming") return i.status === "Scheduled" || i.status === "Rescheduled";
@@ -34,21 +36,29 @@ export default function OfficerInspectionsPage() {
   const handleCompleteSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedInsp) {
-      completeInspection(selectedInsp.id, completionRemarks);
-      setCompleteModalOpen(false);
+      setIsSubmittingReport(true);
+      setTimeout(() => {
+        completeInspection(selectedInsp.id, completionRemarks);
+        setIsSubmittingReport(false);
+        setCompleteModalOpen(false);
+      }, 1300);
     }
   };
 
   const handleRescheduleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedInsp) {
-      scheduleOrUpdateInspection({
-        id: selectedInsp.id,
-        date: rescheduleDate,
-        status: "Rescheduled",
-        remarks: "Date adjusted by nodal field inspection cell."
-      });
-      setRescheduleModalOpen(false);
+      setIsRescheduling(true);
+      setTimeout(() => {
+        scheduleOrUpdateInspection({
+          id: selectedInsp.id,
+          date: rescheduleDate,
+          status: "Rescheduled",
+          remarks: "Date adjusted by nodal field inspection cell."
+        });
+        setIsRescheduling(false);
+        setRescheduleModalOpen(false);
+      }, 1000);
     }
   };
 
@@ -196,11 +206,11 @@ export default function OfficerInspectionsPage() {
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setCompleteModalOpen(false)}>
+            <Button variant="secondary" size="sm" onClick={() => setCompleteModalOpen(false)} disabled={isSubmittingReport}>
               Cancel
             </Button>
-            <Button type="submit" variant="success" size="sm">
-              Submit Report & Complete
+            <Button type="submit" variant="success" size="sm" loading={isSubmittingReport}>
+              {isSubmittingReport ? "Submitting Audit Report..." : "Submit Report & Complete"}
             </Button>
           </div>
         </form>
@@ -223,11 +233,11 @@ export default function OfficerInspectionsPage() {
           />
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setRescheduleModalOpen(false)}>
+            <Button variant="secondary" size="sm" onClick={() => setRescheduleModalOpen(false)} disabled={isRescheduling}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" size="sm">
-              Update Date
+            <Button type="submit" variant="primary" size="sm" loading={isRescheduling}>
+              {isRescheduling ? "Updating Date..." : "Update Date"}
             </Button>
           </div>
         </form>

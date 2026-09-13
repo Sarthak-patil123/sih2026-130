@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, HelpCircle, Languages } from 'lucide-react';
+import { Sparkles, HelpCircle, Languages, Loader2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
@@ -29,38 +29,60 @@ export const AIExplainButton: React.FC<AIExplainButtonProps> = ({
 }) => {
   const { isMarathi } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [viewLang, setViewLang] = useState(isMarathi ? 'mr' : 'en');
 
   const contentText = viewLang === 'mr' ? plainTextMr : plainTextEn;
   const whyText = viewLang === 'mr' ? whyNeededMr : whyNeededEn;
   const nextText = viewLang === 'mr' ? whatNextMr : whatNextEn;
 
+  const handleTriggerAnalysis = () => {
+    setIsAnalyzing(true);
+    setViewLang(isMarathi ? 'mr' : 'en');
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      setModalOpen(true);
+    }, 1100);
+  };
+
   return (
     <>
       {variant === "button" ? (
         <button
           type="button"
-          onClick={() => {
-            setViewLang(isMarathi ? 'mr' : 'en');
-            setModalOpen(true);
-          }}
-          className="inline-flex items-center gap-1.5 rounded-md border border-[#D89B3C]/50 bg-[#FBF9F5] px-2.5 py-1 text-xs font-semibold text-[#263B63] hover:bg-[#F4F1EA] hover:border-[#D89B3C] transition-colors shadow-2xs cursor-pointer"
+          disabled={isAnalyzing}
+          onClick={handleTriggerAnalysis}
+          className="inline-flex items-center gap-1.5 rounded-md border border-[#D89B3C]/50 bg-[#FBF9F5] px-2.5 py-1 text-xs font-semibold text-[#263B63] hover:bg-[#F4F1EA] hover:border-[#D89B3C] transition-colors shadow-2xs cursor-pointer disabled:opacity-75"
           title="Explain in simple language"
         >
-          <Sparkles className="h-3.5 w-3.5 text-[#D89B3C]" />
-          <span>{isMarathi ? "सोप्या भाषेत सांगा" : "Explain simply"}</span>
+          {isAnalyzing ? (
+            <Loader2 className="h-3.5 w-3.5 text-[#D89B3C] animate-spin" />
+          ) : (
+            <Sparkles className="h-3.5 w-3.5 text-[#D89B3C]" />
+          )}
+          <span>
+            {isAnalyzing
+              ? (isMarathi ? "विश्लेषण चालू आहे..." : "AI Analyzing...")
+              : (isMarathi ? "सोप्या भाषेत सांगा" : "Explain simply")}
+          </span>
         </button>
       ) : (
         <button
           type="button"
-          onClick={() => {
-            setViewLang(isMarathi ? 'mr' : 'en');
-            setModalOpen(true);
-          }}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#263B63] hover:text-[#3D8C82] hover:underline transition-colors cursor-pointer"
+          disabled={isAnalyzing}
+          onClick={handleTriggerAnalysis}
+          className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#263B63] hover:text-[#3D8C82] hover:underline transition-colors cursor-pointer disabled:opacity-75"
         >
-          <HelpCircle className="h-3 w-3 text-[#D89B3C]" />
-          <span>{isMarathi ? "मराठीत स्पष्टीकरण" : "Explain simply"}</span>
+          {isAnalyzing ? (
+            <Loader2 className="h-3 w-3 text-[#D89B3C] animate-spin" />
+          ) : (
+            <HelpCircle className="h-3 w-3 text-[#D89B3C]" />
+          )}
+          <span>
+            {isAnalyzing
+              ? (isMarathi ? "AI विश्लेषण..." : "AI Analyzing...")
+              : (isMarathi ? "मराठीत स्पष्टीकरण" : "Explain simply")}
+          </span>
         </button>
       )}
 

@@ -8,7 +8,9 @@ import {
   CheckCircle2, 
   GitMerge, 
   Sparkles,
-  Info
+  Info,
+  Loader2,
+  ShieldCheck
 } from 'lucide-react';
 import { usePortal } from '@/context/PortalContext';
 import { Input, Select } from '@/components/common/Input';
@@ -19,6 +21,9 @@ export default function CreateProjectPage() {
   const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [isGeneratingRoadmap, setIsGeneratingRoadmap] = useState(false);
+  const [generationStep, setGenerationStep] = useState(1);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const [formData, setFormData] = useState({
     projectName: "Vidarbha Agro Bio-Tech Mega Processing Plant",
     companyName: "Vidarbha Agro Bio-Tech Pvt. Ltd.",
@@ -106,17 +111,34 @@ export default function CreateProjectPage() {
   };
 
   const handleGenerateRoadmap = () => {
-    createProject({
-      projectName: formData.projectName,
-      companyName: formData.companyName,
-      industry: formData.industry,
-      projectType: formData.projectType,
-      investment: `₹${formData.investment} Cr`,
-      landArea: formData.landArea,
-      district: formData.district,
-      address: `${formData.address}, ${formData.industrialArea}, ${formData.taluka}`
-    });
-    router.push('/entrepreneur/roadmap');
+    setIsGeneratingRoadmap(true);
+    setGenerationStep(1);
+    setGenerationProgress(20);
+
+    setTimeout(() => {
+      setGenerationStep(2);
+      setGenerationProgress(65);
+    }, 800);
+
+    setTimeout(() => {
+      setGenerationStep(3);
+      setGenerationProgress(92);
+    }, 1600);
+
+    setTimeout(() => {
+      setGenerationProgress(100);
+      createProject({
+        projectName: formData.projectName,
+        companyName: formData.companyName,
+        industry: formData.industry,
+        projectType: formData.projectType,
+        investment: `₹${formData.investment} Cr`,
+        landArea: formData.landArea,
+        district: formData.district,
+        address: `${formData.address}, ${formData.industrialArea}, ${formData.taluka}`
+      });
+      router.push('/entrepreneur/roadmap');
+    }, 2400);
   };
 
   const steps = [
@@ -429,13 +451,119 @@ export default function CreateProjectPage() {
               variant="blue"
               size="md"
               icon={GitMerge}
+              loading={isGeneratingRoadmap}
               onClick={handleGenerateRoadmap}
             >
-              Generate Approval Roadmap
+              {isGeneratingRoadmap ? "Processing Single-Window Rules..." : "Generate Approval Roadmap"}
             </Button>
           )}
         </div>
       </div>
+
+      {/* High-Fidelity Processing Modal / Overlay for Demo */}
+      {isGeneratingRoadmap && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-700 bg-[#0F2942] text-white p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-700/80 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#D89B3C] text-[#0F2942] font-black text-sm">
+                  MH
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold tracking-wide">MAITRI Single Window Rule Engine</h3>
+                  <p className="text-[11px] text-slate-300">Govt of Maharashtra • Statutory Clearance Compiler</p>
+                </div>
+              </div>
+              <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-[#D89B3C] bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/30">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                {generationProgress}%
+              </span>
+            </div>
+
+            {/* Animated Progress Bar */}
+            <div className="space-y-1.5">
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
+                <div 
+                  className="h-full bg-gradient-to-r from-[#D89B3C] via-emerald-400 to-blue-400 transition-all duration-500 ease-out"
+                  style={{ width: `${generationProgress}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400">
+                <span>Rule Scrutiny</span>
+                <span>Inter-Dept Mapping</span>
+                <span>Passport Minting</span>
+              </div>
+            </div>
+
+            {/* Staged Evaluation Steps */}
+            <div className="space-y-3 pt-1 text-xs">
+              <div className={`flex items-start gap-3 rounded-lg p-3 transition-colors ${
+                generationStep > 1 ? "bg-emerald-950/40 border border-emerald-500/30" : "bg-slate-800/80 border border-slate-700"
+              }`}>
+                {generationStep > 1 ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                ) : (
+                  <Loader2 className="h-4 w-4 text-[#D89B3C] animate-spin shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <p className="font-semibold text-slate-100">Step 1: Industrial Classification & Zoning Validation</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    Analyzing unit capital ({formData.investment ? `₹${formData.investment} Cr` : '₹40 Cr'}) & MIDC {formData.district || 'Nagpur'} industrial zone setbacks.
+                  </p>
+                </div>
+              </div>
+
+              <div className={`flex items-start gap-3 rounded-lg p-3 transition-colors ${
+                generationStep > 2 
+                  ? "bg-emerald-950/40 border border-emerald-500/30" 
+                  : generationStep === 2 
+                  ? "bg-blue-950/40 border border-blue-500/40" 
+                  : "opacity-40 bg-slate-900 border border-slate-800"
+              }`}>
+                {generationStep > 2 ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                ) : generationStep === 2 ? (
+                  <Loader2 className="h-4 w-4 text-blue-400 animate-spin shrink-0 mt-0.5" />
+                ) : (
+                  <div className="h-4 w-4 rounded-full border border-slate-600 shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <p className="font-semibold text-slate-100">Step 2: Statutory Clearances & Dependency Graph</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    Synthesizing parallel tracks for MPCB Consent, Fire NOC, DISH Factory Plan & Power Sanction.
+                  </p>
+                </div>
+              </div>
+
+              <div className={`flex items-start gap-3 rounded-lg p-3 transition-colors ${
+                generationStep === 3 
+                  ? "bg-amber-950/40 border border-amber-500/40" 
+                  : generationProgress === 100
+                  ? "bg-emerald-950/40 border border-emerald-500/30"
+                  : "opacity-40 bg-slate-900 border border-slate-800"
+              }`}>
+                {generationProgress === 100 ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                ) : generationStep === 3 ? (
+                  <Loader2 className="h-4 w-4 text-amber-400 animate-spin shrink-0 mt-0.5" />
+                ) : (
+                  <div className="h-4 w-4 rounded-full border border-slate-600 shrink-0 mt-0.5" />
+                )}
+                <div>
+                  <p className="font-semibold text-slate-100">Step 3: Issuing Digital Project Passport</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    Generating unique Single Window Passport ID and interactive statutory timeline.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center text-[11px] text-slate-400 border-t border-slate-800 pt-3">
+              Directing to your customized statutory clearance roadmap...
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
