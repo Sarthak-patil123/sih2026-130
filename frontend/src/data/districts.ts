@@ -11,8 +11,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 91,
     pendingCount: 214,
     majorIndustries: ["Food Processing", "Logistics", "Defence Manufacturing", "Textiles"],
-    x: 82, // relative map coordinate %
-    y: 28,
+    x: 601,
+    y: 123,
     status: "good"
   },
   {
@@ -25,8 +25,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 88,
     pendingCount: 412,
     majorIndustries: ["Automotive", "Engineering", "IT / Hardware", "Biotech"],
-    x: 34,
-    y: 58,
+    x: 170,
+    y: 330,
     status: "good"
   },
   {
@@ -39,8 +39,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 79,
     pendingCount: 285,
     majorIndustries: ["Auto Ancillary", "Pharmaceuticals", "Brewery", "DMIC Smart City"],
-    x: 48,
-    y: 42,
+    x: 292,
+    y: 223,
     status: "warning"
   },
   {
@@ -53,8 +53,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 89,
     pendingCount: 198,
     majorIndustries: ["Agro & Wine", "Engineering", "Electricals", "Aviation"],
-    x: 28,
-    y: 38,
+    x: 164,
+    y: 213,
     status: "good"
   },
   {
@@ -67,8 +67,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 72,
     pendingCount: 520,
     majorIndustries: ["Chemicals", "Engineering", "Logistics", "Textiles"],
-    x: 18,
-    y: 46,
+    x: 98,
+    y: 275,
     status: "delayed"
   },
   {
@@ -81,8 +81,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 84,
     pendingCount: 180,
     majorIndustries: ["Steel", "Petrochemicals", "Bulk Drugs", "Port Logistics"],
-    x: 20,
-    y: 56,
+    x: 109,
+    y: 330,
     status: "good"
   },
   {
@@ -95,8 +95,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 92,
     pendingCount: 94,
     majorIndustries: ["Textiles Park (Nandgaon Peth)", "Agro Processing", "Ginning"],
-    x: 68,
-    y: 26,
+    x: 491,
+    y: 139,
     status: "good"
   },
   {
@@ -109,8 +109,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 87,
     pendingCount: 142,
     majorIndustries: ["Foundry & Casting", "Sugar & Ethanol", "Textiles", "Auto Parts"],
-    x: 30,
-    y: 78,
+    x: 202,
+    y: 473,
     status: "good"
   },
   {
@@ -123,8 +123,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 85,
     pendingCount: 110,
     majorIndustries: ["Textiles & Terry Towel", "Garments", "Agro", "Power Generation"],
-    x: 48,
-    y: 72,
+    x: 339,
+    y: 397,
     status: "good"
   },
   {
@@ -137,8 +137,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 76,
     pendingCount: 130,
     majorIndustries: ["Cotton Processing", "Agro Commodities", "Bio-Fertilizers"],
-    x: 65,
-    y: 58,
+    x: 454,
+    y: 279,
     status: "warning"
   },
   {
@@ -151,8 +151,8 @@ export const maharashtraDistricts: District[] = [
     slaCompliance: 81,
     pendingCount: 125,
     majorIndustries: ["Cement", "Thermal Power", "Paper & Pulp", "Minerals"],
-    x: 88,
-    y: 48,
+    x: 618,
+    y: 216,
     status: "good"
   }
 ];
